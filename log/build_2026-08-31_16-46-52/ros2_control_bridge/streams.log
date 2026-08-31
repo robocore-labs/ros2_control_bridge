@@ -1,0 +1,86 @@
+[0.005s] Invoking command in '/home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/cdr/Work/ros-packages/ros2_control_bridge -DPython3_EXECUTABLE=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge
+[0.039s] -- The C compiler identification is GNU 13.3.0
+[0.068s] -- The CXX compiler identification is GNU 13.3.0
+[0.079s] -- Detecting C compiler ABI info
+[0.132s] -- Detecting C compiler ABI info - done
+[0.138s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.138s] -- Detecting C compile features
+[0.138s] -- Detecting C compile features - done
+[0.144s] -- Detecting CXX compiler ABI info
+[0.204s] -- Detecting CXX compiler ABI info - done
+[0.212s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.212s] -- Detecting CXX compile features
+[0.212s] -- Detecting CXX compile features - done
+[0.214s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.316s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.377s] -- Found hardware_interface: 4.45.2 (/opt/ros/jazzy/share/hardware_interface/cmake)
+[0.415s] -- Found rosidl_generator_c: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.423s] -- Found rosidl_generator_cpp: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.432s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.443s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.562s] -- Found TinyXML2 via Config file: /usr/lib/x86_64-linux-gnu/cmake/tinyxml2
+[0.588s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.590s] -- Found rmw_fastrtps_cpp: 8.4.4 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.604s] -- Found TinyXML2 via Config file: /usr/lib/x86_64-linux-gnu/cmake/tinyxml2
+[0.642s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[0.644s] -- Found TinyXML2 via Config file: /usr/lib/x86_64-linux-gnu/cmake/tinyxml2
+[0.654s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[0.656s] -- Found TinyXML2 via Config file: /usr/lib/x86_64-linux-gnu/cmake/tinyxml2
+[0.662s] -- Found TinyXML2 via Config file: /usr/lib/x86_64-linux-gnu/cmake/tinyxml2
+[0.669s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.822s] -- Found ament_lint_auto: 0.17.5 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.885s] -- Added test 'copyright' to check source files copyright and LICENSE
+[0.888s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[0.888s] -- Configured cppcheck include dirs: /home/cdr/Work/ros-packages/ros2_control_bridge/include
+[0.888s] -- Configured cppcheck exclude dirs and/or files: 
+[0.890s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[0.890s] -- Configured cpplint exclude dirs and/or files: 
+[0.891s] -- Added test 'lint_cmake' to check CMake code style
+[0.894s] -- Added test 'uncrustify' to check C / C++ code style
+[0.894s] -- Configured uncrustify additional arguments: 
+[0.895s] -- Added test 'xmllint' to check XML markup files
+[0.895s] -- Configuring done (0.9s)
+[0.905s] -- Generating done (0.0s)
+[0.907s] -- Build files have been written to: /home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge
+[0.913s] Invoked command in '/home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/cdr/Work/ros-packages/ros2_control_bridge -DPython3_EXECUTABLE=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=/home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge
+[0.914s] Invoking command in '/home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge -- -j32 -l32
+[0.947s] [ 50%] Building CXX object CMakeFiles/ros2_control_bridge.dir/src/topic_bridge.cpp.o
+[2.054s] /home/cdr/Work/ros-packages/ros2_control_bridge/src/topic_bridge.cpp: In member function ‘virtual hardware_interface::CallbackReturn ros2_control_bridge::TopicBridge::on_init(const hardware_interface::HardwareInfo&)’:
+[2.054s] /home/cdr/Work/ros-packages/ros2_control_bridge/src/topic_bridge.cpp:43:51: warning: ‘virtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn hardware_interface::HardwareComponentInterface::on_init(const hardware_interface::HardwareInfo&)’ is deprecated: Use on_init(const HardwareComponentInterfaceParams & params) instead. [-Wdeprecated-declarations]
+[2.055s]    43 |   if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
+[2.055s]       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+[2.055s] In file included from /opt/ros/jazzy/include/hardware_interface/hardware_interface/system_interface.hpp:18,
+[2.055s]                  from /home/cdr/Work/ros-packages/ros2_control_bridge/include/ros2_control_bridge/topic_bridge.hpp:16,
+[2.055s]                  from /home/cdr/Work/ros-packages/ros2_control_bridge/src/topic_bridge.cpp:1:
+[2.055s] /opt/ros/jazzy/include/hardware_interface/hardware_interface/hardware_component_interface.hpp:140:26: note: declared here
+[2.055s]   140 |   virtual CallbackReturn on_init(const HardwareInfo & hardware_info);
+[2.055s]       |                          ^~~~~~~
+[4.973s] [100%] Linking CXX shared library libros2_control_bridge.so
+[5.177s] [100%] Built target ros2_control_bridge
+[5.183s] Invoked command in '/home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge -- -j32 -l32
+[5.190s] Invoking command in '/home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge
+[5.196s] -- Install configuration: ""
+[5.196s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/plugin_description.xml
+[5.196s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/lib/libros2_control_bridge.so
+[5.200s] -- Set non-toolchain portion of runtime path of "/home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/lib/libros2_control_bridge.so" to ""
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/include
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/include/ros2_control_bridge
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/include/ros2_control_bridge/topic_bridge.hpp
+[5.200s] -- Up-to-date: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/plugin_description.xml
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ament_index/resource_index/package_run_dependencies/ros2_control_bridge
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ament_index/resource_index/parent_prefix_path/ros2_control_bridge
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/environment/ament_prefix_path.sh
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/environment/ament_prefix_path.dsv
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/environment/path.sh
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/environment/path.dsv
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/local_setup.bash
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/local_setup.sh
+[5.200s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/local_setup.zsh
+[5.201s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/local_setup.dsv
+[5.201s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/package.dsv
+[5.201s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ament_index/resource_index/packages/ros2_control_bridge
+[5.201s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ament_index/resource_index/hardware_interface__pluginlib__plugin/ros2_control_bridge
+[5.201s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/cmake/ros2_control_bridgeConfig.cmake
+[5.201s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/cmake/ros2_control_bridgeConfig-version.cmake
+[5.201s] -- Installing: /home/cdr/Work/ros-packages/ros2_control_bridge/install/ros2_control_bridge/share/ros2_control_bridge/package.xml
+[5.202s] Invoked command in '/home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/cdr/Work/ros-packages/ros2_control_bridge/build/ros2_control_bridge

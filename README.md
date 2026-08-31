@@ -1,89 +1,131 @@
-# llmy_control_plugin
+# ros2_control_bridge
 
-A `ros2_control` **SystemInterface** hardware plugin that bridges ros2_control to the LLMy servo manager via ROS2 topics.
+A `ros2_control` **SystemInterface** that talks to a motor driver over ROS
+topics instead of a serial bus.
 
-## Purpose
+```
+controllers ──▶ ros2_control_bridge ──▶ /<prefix>/<group>_cmd   (Float64MultiArray)
+                        ▲
+                        └────────────── /<prefix>/joint_states  (JointState)
+```
 
-This plugin implements the hardware abstraction layer for ros2_control, allowing standard controllers to work with LLMy hardware. It uses a topic-based interface rather than direct serial communication, which decouples the control stack from hardware details.
+**Nothing in it knows what robot it is on.** Groups, topics and interfaces all
+come from the URDF, so one build serves every robot.
 
-## Topic Interface
+## Why a topic and not a serial port
 
-### Published (Commands to Hardware)
-
-- **`/motor_manager/base_cmd`** - `std_msgs/Float64MultiArray`
-  - `[back_motor_rotation, left_motor_rotation, right_motor_rotation]` (rad/s)
-  - QoS: Best-effort, depth 1
-
-- **`/motor_manager/arm_cmd`** - `std_msgs/Float64MultiArray`
-  - `[joint_1, joint_2, joint_3, joint_4, joint_5, joint_6]` (radians)
-  - QoS: Best-effort, depth 1
-
-- **`/motor_manager/head_cmd`** - `std_msgs/Float64MultiArray`
-  - `[camera_pan, camera_tilt]` (radians)
-  - QoS: Best-effort, depth 1
-
-### Subscribed (Feedback from Hardware)
-
-- **`/motor_manager/joint_states`** - `sensor_msgs/JointState`
-  - All joint positions and velocities
-  - QoS: Reliable, depth 5
-
-## Hardware Interfaces Exported
-
-The plugin exports these command and state interfaces to ros2_control:
-
-**Base (velocity interfaces):**
-- `back_motor_rotation/velocity`
-- `left_motor_rotation/velocity`
-- `right_motor_rotation/velocity`
-
-**Arm (position interfaces):**
-- `1/position`, `2/position`, `3/position`, `4/position`, `5/position`, `6/position`
-
-**Head (position interfaces):**
-- `camera_pan/position`, `camera_tilt/position`
+A SystemInterface's `read()` and `write()` run inside controller_manager's
+update loop. A blocking serial read there stalls every controller on the robot,
+and a chain of hobby servos at 1 Mbaud is milliseconds per cycle, not
+microseconds. Putting the bus behind a topic moves that latency out of the
+control loop. The cost is a hop, and the loss of hard sync between a command and
+the state it produced — which a servo bus does not offer anyway.
 
 ## Configuration
 
-### Hardware Interface Config
+All of it lives in the `<ros2_control>` block of the URDF.
 
-Configuration is in `llmy_control/config/ros2_control_bridge.yaml`:
+```xml
+<ros2_control name="my_robot" type="system">
+  <hardware>
+    <plugin>ros2_control_bridge/TopicBridge</plugin>
+    <param name="state_topic">/motor_manager/joint_states</param>
+    <param name="cmd_topic_prefix">/motor_manager</param>
+  </hardware>
 
-```yaml
-hardware_interface:
-  plugin: "llmy_control_plugin/ROS2ControlBridge"
-  base_joints: [back_motor_rotation, left_motor_rotation, right_motor_rotation]
-  arm_joints: ["1", "2", "3", "4", "5", "6"]
-  head_joints: [camera_pan, camera_tilt]
+  <joint name="joint_base">
+    <param name="group">arm</param>
+    <command_interface name="position"/>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+  </joint>
+  <!-- ... four more arm joints ... -->
+
+  <joint name="pan_joint">
+    <param name="group">head</param>
+    <command_interface name="position"/>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+  </joint>
+</ros2_control>
 ```
 
-## Usage
+That produces two publishers — `/motor_manager/arm_cmd` with five values and
+`/motor_manager/head_cmd` with two — and one subscriber.
 
-This plugin is loaded automatically by `llmy_control/control_stack.launch.py`. You don't typically interact with it directly.
+### Hardware parameters
 
-### Normal Usage
+| param | default | |
+|---|---|---|
+| `state_topic` | `/motor_manager/joint_states` | `sensor_msgs/JointState` in |
+| `cmd_topic_prefix` | `/motor_manager` | groups default to `<prefix>/<name>_cmd` |
+| `group.<name>.topic` | — | override one group's topic |
+| `default_group` | `default` | group for joints with no `group` param |
+| `state_best_effort` | `true` | `false` for a reliable subscription |
+
+### Per-joint parameters
+
+| param | |
+|---|---|
+| `group` | which group — and therefore which topic and which array |
+
+**The order of joints within a group is the order of values on that group's
+topic.** It is the whole contract with the driver on the other end; reorder the
+joints in the URDF and the wire format changes under it.
+
+A group's interface is whatever its joints declare (`position` or `velocity`).
+Mixing the two inside one group is an error: one array cannot be both. Declaring
+two command interfaces on one joint is also an error — index *i* of the array
+could then mean either.
+
+Every joint exports **both** position and velocity state, whatever it commands,
+because `joint_trajectory_controller` asks for velocity state on
+position-commanded joints and refuses to configure without it.
+
+Several `<ros2_control>` systems can each load their own instance — an
+end-effector on the same bus as the arm, say. Each ignores joints it does not
+own when reading the shared state topic.
+
+Each instance names its node after its system: a block named
+`mod101_harness_hardware` gets `/mod101_harness_hardware_bridge`. It used to be
+the constant `ros2_control_topic_bridge` for all of them, which ROS 2 permits
+and then warns about — `ros2 node list` showed one name twice with no way to
+tell which was which, and anything addressing a node by name got whichever
+answered first. Characters a node name cannot carry are folded to underscores.
+
+## Startup interlock
+
+A position group publishes nothing until **every joint the plugin owns has
+appeared in a `JointState` message**. Then commands are seeded from the measured
+positions and publishing begins, so the first message is the current pose rather
+than a step to it.
+
+Without that, the first `write()` would publish whatever the command interfaces
+hold — `0.0` — and the arm would snap to its zero pose.
+
+Velocity groups publish immediately: zero velocity is a safe command, and
+withholding it would leave a wheel running through the wait.
+
+## What this replaced
+
+The first version had three hard-coded groups — `base` (velocity), `arm`
+(position) and `camera` (position) — and decided which was which by testing
+whether a joint's name contained the substring `"camera"`. On a robot whose
+pan/tilt joints were called `hn_pan_joint` and `hn_tilt_joint`, both silently
+joined the arm group and were published on the arm's topic, in the arm's array,
+at indices the arm's driver owned. It also published a `base_cmd` array every
+cycle, empty, on a robot with no wheels.
+
+Its startup interlock waited for any arm joint to report a position more than
+0.005 rad from zero. An arm parked at its zero pose never satisfied that, and
+the bridge held position forever.
+
+## Building
 
 ```bash
-# Launch complete system (includes this plugin)
-ros2 launch llmy_control control_stack.launch.py
+colcon build --packages-select ros2_control_bridge
 ```
 
-### Standalone Testing
-
-```bash
-# 1. Start servo manager
-ros2 launch llmy_servo_manager servo_manager.launch.py
-
-# 2. Launch plugin (requires robot_description)
-ros2 launch llmy_control_plugin bringup.launch.py
-```
-
-## Implementation Notes
-
-### Lifecycle
-
-1. **`on_init()`** - Read configuration, register joint interfaces
-2. **`on_configure()`** - Create publishers and subscribers
-3. **`on_activate()`** - Ready for control
-4. **`read()`** - Update state interfaces from `/motor_manager/joint_states` (called at update rate)
-5. **`write()`** - Publish commands from command interfaces (called at update rate)
+Jazzy emits one deprecation warning for `on_init(const HardwareInfo&)`; the
+replacement (`on_init(const HardwareComponentInterfaceParams&)`) is not present
+across all Jazzy patch releases, so the older signature is deliberate.

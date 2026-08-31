@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(llmy_control_plugin)
+project(ros2_control_bridge)
 
 find_package(ament_cmake REQUIRED)
 find_package(hardware_interface REQUIRED)
@@ -10,7 +10,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-  src/ros2_control_bridge.cpp
+  src/topic_bridge.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
